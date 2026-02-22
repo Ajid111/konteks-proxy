@@ -192,26 +192,37 @@ def generate_ranking():
     
     target_vec = word_vectors[kata_rahasia]
     
-    # Hitung similarity ke semua kata dalam model
+    target_vec = word_vectors[kata_rahasia]
+    
+    # Hitung similarity ke semua kata, filter hanya kata Indonesia valid
     similarities = []
     for word, vec in word_vectors.items():
         if word == kata_rahasia:
             continue
-        sim = cosine_similarity(target_vec, vec)
+        # Filter: hanya kata yang benar-benar kata (bukan kode/singkatan)
+        if len(word) < 2 or len(word) > 20:
+            continue
+        if not word.isalpha():
+            continue
+        sim = float(cosine_similarity(target_vec, vec))
         similarities.append((word, sim))
     
     # Sort dari paling mirip ke paling jauh
     similarities.sort(key=lambda x: x[1], reverse=True)
     
-    # Convert ke ranking (1 = paling mirip)
+    # Ambil top 12000 saja agar tidak timeout (masih mencakup ranking luas)
+    TOP_N = 12000
+    similarities = similarities[:TOP_N]
+    
+    # Convert ke ranking
     ranking = {}
-    ranking[kata_rahasia] = 1  # kata itu sendiri selalu #1
+    ranking[kata_rahasia] = 1
     
     for i, (word, sim) in enumerate(similarities):
-        ranking[word] = i + 2  # mulai dari #2
+        ranking[word] = i + 2
     
     total = len(ranking)
-    print(f"[RANKING] '{kata_rahasia}' -> {total} kata (similarity-based)")
+    print(f"[RANKING] '{kata_rahasia}' -> {total} kata (word2vec cosine)")
     
     return jsonify({
         "success": True,
@@ -232,25 +243,31 @@ def generate_word():
     if not model_ready:
         return jsonify({"error": "Model masih loading"}), 503
     
-    # Filter kata yang layak & ada di model & belum dipakai
+    import random
+    
+    # Filter dari KATA_LAYAK: harus ada di model dan belum dipakai
     available = [k for k in KATA_LAYAK 
                  if k in word_vectors and k not in used_words]
     
     if not available:
+        # Reset dan coba lagi
         used_words.clear()
         available = [k for k in KATA_LAYAK if k in word_vectors]
     
-    if not available:
-        # Ambil kata random dari model
-        import random
-        kata = random.choice([w for w in vocab_list 
-                             if 4 <= len(w) <= 10 and w.isalpha()])
-    else:
-        import random
+    if available:
         kata = random.choice(available)
+    else:
+        # Fallback keras: ambil dari vocab model dengan filter ketat
+        candidates = [w for w in vocab_list 
+                     if (4 <= len(w) <= 12 
+                         and w.isalpha() 
+                         and w[0] in 'abcdefghijklmnoprstuw'  # huruf awal umum Indonesia
+                         and not any(c in w for c in 'qvxyz')  # hindari huruf jarang
+                         and w not in used_words)]
+        kata = random.choice(candidates) if candidates else "laut"
     
     used_words.add(kata)
-    print(f"[WORD] '{kata}' (sisa: {len(available)-1} kata layak)")
+    print(f"[WORD] Terpilih: '{kata}' (sisa: {len(available)-1} kata layak)")
     
     return jsonify({"success": True, "kata": kata.upper()})
 
