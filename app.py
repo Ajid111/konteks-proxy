@@ -18,6 +18,11 @@ app = Flask(__name__)
 
 ROBLOX_SECRET = os.environ.get("ROBLOX_SECRET", "konteks-rahasia-2024")
 
+# Cache ranking di level proxy (antar semua Roblox server)
+# { kata_rahasia: {ranking_dict} }
+proxy_ranking_cache = {}
+cache_lock = threading.Lock()
+
 # ============================================================
 # MODEL - load sekali saat server start
 # ============================================================
@@ -190,19 +195,24 @@ def generate_ranking():
     if kata_rahasia not in word_vectors:
         return jsonify({"error": f"'{kata_rahasia}' tidak ada di model"}), 404
     
+    # Cek cache proxy dulu (hemat waktu & CPU)
+    with cache_lock:
+        if kata_rahasia in proxy_ranking_cache:
+            cached = proxy_ranking_cache[kata_rahasia]
+            print(f"[RANKING] Cache hit: '{kata_rahasia}'")
+            return jsonify({"success": True, "kata_rahasia": kata_rahasia,
+                           "ranking": cached, "jumlah": len(cached), "method": "cache"})
+    
     target_vec = word_vectors[kata_rahasia]
     
-    # Hitung similarity ke semua kata
-    # Filter hanya kata Indonesia: ada vokal, panjang wajar, semua huruf
+    # Hitung similarity menggunakan numpy vectorized (jauh lebih cepat dari loop)
     def is_valid_indonesian(w):
         if len(w) < 2 or len(w) > 18:
             return False
         if not w.isalpha():
             return False
-        # Harus ada minimal 1 vokal
         if not any(c in 'aiueo' for c in w):
             return False
-        # Tidak boleh ada 4+ konsonan berurutan (bukan kata Indonesia)
         consonants = set('bcdfghjklmnpqrstvwxyz')
         streak = 0
         for c in w:
@@ -212,36 +222,54 @@ def generate_ranking():
                     return False
             else:
                 streak = 0
-        # Hindari kata yang terlalu banyak huruf langka (x, q, z berlebihan)
         rare = sum(1 for c in w if c in 'xqz')
         if rare > 1:
             return False
         return True
     
-    similarities = []
-    for word, vec in word_vectors.items():
-        if word == kata_rahasia:
-            continue
-        if not is_valid_indonesian(word):
-            continue
-        sim = float(cosine_similarity(target_vec, vec))
-        similarities.append((word, sim))
+    # Filter kata valid dulu
+    valid_words = [(w, v) for w, v in word_vectors.items() 
+                   if w != kata_rahasia and is_valid_indonesian(w)]
     
-    # Sort dari paling mirip ke paling jauh
+    # Numpy vectorized cosine similarity (10-20x lebih cepat dari loop biasa)
+    if valid_words:
+        words_list = [w for w, v in valid_words]
+        vecs_matrix = np.array([v for w, v in valid_words], dtype=np.float32)
+        
+        # Normalisasi target
+        target_norm = target_vec / (np.linalg.norm(target_vec) + 1e-10)
+        
+        # Normalisasi semua vektor sekaligus
+        norms = np.linalg.norm(vecs_matrix, axis=1, keepdims=True) + 1e-10
+        vecs_normalized = vecs_matrix / norms
+        
+        # Dot product sekaligus (vectorized)
+        sims = vecs_normalized.dot(target_norm).tolist()
+        
+        similarities = list(zip(words_list, sims))
+    else:
+        similarities = []
+    
+    # Sort dan ambil top N
     similarities.sort(key=lambda x: x[1], reverse=True)
-    
-    # Ambil top 15000 untuk jangkauan luas tapi tidak timeout
     TOP_N = 15000
     similarities = similarities[:TOP_N]
     
     # Convert ke ranking
-    ranking = {}
-    ranking[kata_rahasia] = 1
+    ranking = {kata_rahasia: 1}
     for i, (word, sim) in enumerate(similarities):
         ranking[word] = i + 2
     
     total = len(ranking)
-    print(f"[RANKING] '{kata_rahasia}' -> {total} kata valid Indonesia (word2vec)")
+    print(f"[RANKING] '{kata_rahasia}' -> {total} kata valid (vectorized)")
+    
+    # Simpan ke proxy cache (max 50 kata untuk hemat memory)
+    with cache_lock:
+        if len(proxy_ranking_cache) >= 50:
+            # Hapus entry paling lama
+            oldest = next(iter(proxy_ranking_cache))
+            del proxy_ranking_cache[oldest]
+        proxy_ranking_cache[kata_rahasia] = ranking
     
     return jsonify({
         "success": True,
