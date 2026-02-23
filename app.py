@@ -50,6 +50,58 @@ KATA_LAYAK = [
 
 used_words = set()
 
+# ============================================================
+# SEMANTIC CLUSTERS - Boost kedekatan kata berdasarkan pengetahuan manusia
+# Mengatasi kelemahan model Word2Vec yang dilatih dari Wikipedia formal
+# Format: { kata_pusat: [kata_sangat_dekat, ...] }
+# ============================================================
+SEMANTIC_CLUSTERS = {
+    "sekolah":  ["kelas","guru","murid","siswa","buku","pelajaran","tugas","ujian","nilai","rapor","les","belajar","perpustakaan","kantin","lapangan","seragam","tas","pensil","pulpen","bangku","kurikulum","ulangan","pr","wisuda","ijazah","sd","smp","sma","universitas","kampus","mahasiswa","dosen","kuliah"],
+    "hutan":    ["pohon","rimba","belantara","lebat","semak","belukar","daun","ranting","akar","batang","lumut","jamur","bambu","rotan","kayu","satwa","harimau","gajah","orangutan","monyet","rusa","burung","deforestasi","konservasi","tropis","lembab","hijau","teduh","rindang","cagar","taman nasional"],
+    "laut":     ["ikan","ombak","pantai","samudra","nelayan","kapal","perahu","jaring","terumbu","karang","lumba","paus","hiu","cumi","udang","kerang","garam","asin","pasir","pelabuhan","biru","gelombang","pesisir","teluk","selat","pulau","tsunami"],
+    "api":      ["nyala","bara","panas","membakar","asap","abu","arang","korek","lilin","obor","kompor","kayu","kebakaran","hangus","gosong","cahaya","terang","unggun","merah","oranye"],
+    "air":      ["minum","basah","cair","sungai","danau","hujan","kolam","sumur","embun","es","banjir","jernih","mengalir","sejuk","segar","mineral","pompa","pipa","waduk","bendungan","mata air"],
+    "rumah":    ["kamar","dapur","ruang tamu","kamar mandi","garasi","teras","halaman","pagar","pintu","jendela","atap","lantai","dinding","tangga","sofa","meja","kursi","lemari","kasur","bantal","lampu","listrik","kontrakan","kos","sewa","bangunan"],
+    "masak":    ["bumbu","rempah","dapur","kompor","wajan","panci","pisau","minyak","garam","gula","bawang","cabai","kunyit","jahe","santan","kecap","resep","goreng","rebus","kukus","bakar","tumis","tepung","adonan"],
+    "makanan":  ["nasi","lauk","sayur","kenyang","lapar","enak","lezat","pedas","manis","asin","gurih","warung","restoran","piring","sendok","garpu","jajanan","kue","roti","sate","bakso","mie","sup","camilan"],
+    "pakaian":  ["baju","celana","rok","kaos","kemeja","jaket","topi","sepatu","sandal","kaus kaki","cincin","gelang","kalung","anting","dompet","tas","kain","benang","merk","fashion","butik"],
+    "olahraga": ["sepak bola","basket","voli","badminton","renang","lari","gym","latihan","pertandingan","kompetisi","juara","medali","atlet","pemain","pelatih","stadion","lapangan","bola","raket","gol","skor","tim","klub"],
+    "kesehatan":["dokter","obat","sakit","rumah sakit","puskesmas","perawat","apotek","resep","vitamin","vaksin","imun","demam","batuk","flu","luka","operasi","rawat","sembuh","sehat","gizi","nutrisi","diet"],
+    "keluarga": ["ayah","ibu","anak","kakak","adik","kakek","nenek","paman","bibi","sepupu","saudara","suami","istri","orang tua","menikah","rumah tangga","keturunan","cucu","mertua","ipar"],
+    "kota":     ["jalan","gedung","mobil","motor","macet","ramai","penduduk","pasar","toko","mall","kantor","sekolah","rumah","jembatan","lampu","polisi","bus","angkot","taksi","ojek","trotoar","taman","plaza"],
+    "alam":     ["gunung","bukit","lembah","sungai","danau","hutan","pantai","sawah","ladang","kebun","desa","udara","hijau","sejuk","tenang","bersih","alam bebas","petualangan","camping","hiking","trekking"],
+    "musik":    ["lagu","nada","melodi","ritme","irama","suara","vokal","penyanyi","band","gitar","piano","drum","bass","biola","keyboard","studio","rekaman","konser","album","hits","genre","jazz","pop","rock"],
+    "teknologi":["komputer","laptop","hp","smartphone","internet","wifi","aplikasi","software","hardware","program","coding","data","server","cloud","ai","robot","digital","online","website","medsos","youtube","streaming"],
+    "pertanian":["sawah","ladang","kebun","petani","panen","tanam","bibit","pupuk","pestisida","traktor","cangkul","irigasi","gabah","beras","jagung","singkong","ubi","tomat","cabai","kangkung","bayam","wortel","kentang"],
+    "perikanan":["ikan","nelayan","jaring","perahu","kolam","budidaya","tambak","udang","lele","nila","bandeng","salmon","tuna","kerapu","cumi","kepiting","rajungan","asin","teri","asap"],
+}
+
+def get_semantic_boost(kata_rahasia, kata_tebak):
+    """
+    Kembalikan boost ranking berdasarkan semantic cluster.
+    Makin tinggi boost = makin dekat ke target.
+    0 = tidak ada relasi cluster
+    """
+    kata_l = kata_rahasia.lower()
+    tebak_l = kata_tebak.lower()
+    
+    # Cek apakah kata rahasia ada di cluster
+    if kata_l in SEMANTIC_CLUSTERS:
+        related = SEMANTIC_CLUSTERS[kata_l]
+        # Cek posisi kata tebak di list (makin depan = makin dekat)
+        for i, r in enumerate(related):
+            if r == tebak_l:
+                # Posisi 0-5: boost sangat tinggi (ranking ~5-20)
+                # Posisi 6-15: boost tinggi (ranking ~20-100)
+                # Posisi 16+: boost sedang (ranking ~100-300)
+                if i < 6:
+                    return 10 - i  # 10, 9, 8, 7, 6, 5
+                elif i < 16:
+                    return 4
+                else:
+                    return 2
+    return 0
+
 def cosine_similarity(v1, v2):
     """Hitung cosine similarity antara 2 vektor"""
     dot = np.dot(v1, v2)
@@ -277,13 +329,65 @@ def generate_ranking():
     TOP_N = 15000
     similarities = similarities[:TOP_N]
     
-    # Convert ke ranking
-    ranking = {kata_rahasia: 1}
+    # Convert ke ranking dasar dari Word2Vec
+    wv_ranking = {kata_rahasia: 1}
     for i, (word, sim) in enumerate(similarities):
-        ranking[word] = i + 2
+        wv_ranking[word] = i + 2
+    
+    # Terapkan Semantic Boost (hibrid Word2Vec + cluster pengetahuan)
+    # Boost menggeser kata-kata yang secara semantik jelas berkaitan
+    ranking = {}
+    kata_l = kata_rahasia.lower()
+    
+    # Kelompok kata yang mendapat boost berdasarkan cluster
+    boosted = {}
+    if kata_l in SEMANTIC_CLUSTERS:
+        related = SEMANTIC_CLUSTERS[kata_l]
+        for i, r in enumerate(related):
+            if r in wv_ranking:
+                if i < 6:
+                    boosted[r] = i + 2       # ranking 2-7 (sangat dekat)
+                elif i < 16:
+                    boosted[r] = i + 8       # ranking ~10-24 (dekat)
+                else:
+                    boosted[r] = i + 20      # ranking ~36-70 (cukup dekat)
+    
+    # Susun ranking final:
+    # 1. Kata rahasia sendiri selalu #1
+    # 2. Kata yang di-boost masuk ke posisi awal
+    # 3. Sisanya dari Word2Vec, digeser setelah yang di-boost
+    
+    boosted_set = set(boosted.keys())
+    
+    # Hitung berapa slot yang "dipakai" oleh boosted words
+    # Word2Vec words lain digeser ke bawah
+    boost_count = len(boosted)
+    
+    ranking[kata_rahasia] = 1
+    for word, brank in boosted.items():
+        ranking[word] = brank
+    
+    # Sisanya dari Word2Vec similarity (skip yang sudah di-boost)
+    current_rank = boost_count + 2  # mulai setelah boosted words
+    for word, sim in similarities:
+        if word == kata_rahasia or word in boosted_set:
+            continue
+        ranking[word] = current_rank
+        current_rank += 1
+    
+    # Tambah kata-kata cluster yang tidak ada di Word2Vec (dengan ranking tinggi)
+    for i, r in enumerate(SEMANTIC_CLUSTERS.get(kata_l, [])):
+        if r not in ranking:
+            if i < 6:
+                ranking[r] = i + 2
+            elif i < 16:
+                ranking[r] = i + 8
+            else:
+                ranking[r] = i + 20
     
     total = len(ranking)
-    print(f"[RANKING] '{kata_rahasia}' -> {total} kata valid (vectorized)")
+    boosted_info = list(boosted.items())[:5] if boosted else []
+    print(f"[RANKING] '{kata_rahasia}' -> {total} kata | boost: {len(boosted)} kata | contoh: {boosted_info}")
     
     # Simpan ke proxy cache (max 50 kata untuk hemat memory)
     with cache_lock:
