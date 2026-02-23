@@ -31,21 +31,81 @@ vocab_list   = []   # semua kata yang ada di model
 model_ready  = False
 model_error  = None
 
-# Kata-kata yang layak jadi kata rahasia
+# Kata-kata yang layak jadi kata rahasia (300+ kata, beragam kategori)
 KATA_LAYAK = [
-    "air","api","angin","awan","batu","buku","bulan","bunga","burung","cahaya",
-    "daun","desa","gula","gunung","hati","hewan","hutan","hujan","ikan","jalan",
-    "kapal","kayu","keluarga","kota","kopi","kucing","laut","langit","lapar",
-    "malam","matahari","mimpi","musik","nasi","panas","pantai","pasir","pelangi",
-    "pohon","pulau","rumah","sungai","sawah","sekolah","sepi","suara","tangan",
-    "tanah","teman","tidur","uang","waktu","warna","api","bola","darah","gelap",
-    "garam","emas","harimau","istana","jantung","kabut","kunci","langit","lautan",
-    "madu","meja","mimpi","naga","perang","raja","salju","singa","tari","udara",
-    "bintang","badai","buah","cinta","dingin","embun","fajar","galaksi","hijau",
-    "impian","jubah","kilat","lidah","mawar","nafas","obor","petir","rasa","senja",
-    "terang","ular","vokal","wajah","xenon","yoga","zamrud","abadi","bahagia",
-    "cahaya","diam","elang","firma","gempa","harap","indah","jujur","karma","lelah",
-    "maaf","naluri","obat","pikir","riang","sabar","tegas","ulet","vital","waras",
+    # ALAM & LINGKUNGAN
+    "air","api","angin","awan","batu","bulan","bunga","burung","cahaya","daun",
+    "embun","fajar","galaksi","gunung","hutan","hujan","ikan","kabut","kilat",
+    "langit","laut","malam","matahari","pantai","pasir","pelangi","petir","pohon",
+    "pulau","salju","sungai","tanah","udara","bintang","badai","danau","lembah",
+    "padang","rawa","tebing","gua","kawah","savana","tundra","gurun","delta",
+
+    # HEWAN
+    "harimau","singa","gajah","monyet","rusa","kuda","sapi","kambing","domba",
+    "ayam","bebek","burung","ular","buaya","kura","penyu","katak","tikus","kelinci",
+    "kucing","anjing","rubah","beruang","panda","zebra","jerapah","badak","lumba",
+    "paus","hiu","cumi","elang","merak","nuri","kakaktua","jalak","merpati",
+    "lebah","kupu","semut","laba","capung","belalang","kumbang","cacing",
+
+    # TUMBUHAN
+    "mawar","melati","anggrek","bambu","rotan","jati","pinus","cemara","beringin",
+    "mangga","rambutan","durian","nangka","jambu","pisang","pepaya","kelapa",
+    "padi","jagung","singkong","ubi","kentang","wortel","bayam","kangkung","cabai",
+    "tomat","bawang","jahe","kunyit","lengkuas","serai","kopi","teh","coklat",
+
+    # MAKANAN & MINUMAN
+    "nasi","sate","bakso","soto","rendang","gado","ketoprak","pempek","gudeg",
+    "rawon","opor","gulai","kare","mie","roti","kue","tempe","tahu","oncom",
+    "kopi","teh","susu","jus","sirup","es","cendol","dawet","wedang","bajigur",
+
+    # PROFESI & MANUSIA
+    "dokter","guru","polisi","tentara","petani","nelayan","pedagang","pengacara",
+    "hakim","arsitek","pilot","sopir","koki","penulis","seniman","musisi","atlet",
+    "ilmuwan","astronot","pemimpin","presiden","menteri","gubernur","walikota",
+
+    # BENDA SEHARI-HARI
+    "buku","meja","kursi","lampu","pintu","jendela","kasur","bantal","kunci",
+    "cermin","jam","telepon","komputer","kamera","pena","kertas","tas","sepatu",
+    "topi","payung","pisau","sendok","piring","gelas","ember","sapu","sisir",
+
+    # TEMPAT & BANGUNAN
+    "rumah","sekolah","masjid","gereja","istana","benteng","penjara","pasar",
+    "mall","kantor","hotel","rumah sakit","perpustakaan","museum","stadion",
+    "bandara","pelabuhan","terminal","jembatan","menara","taman","lapangan",
+
+    # TRANSPORTASI
+    "mobil","motor","kapal","pesawat","kereta","sepeda","perahu","helikopter",
+    "bus","angkot","taksi","ojek","becak","gerobak","traktor",
+
+    # ALAM SEMESTA & CUACA
+    "bumi","matahari","bulan","bintang","planet","komet","meteor","galaksi",
+    "hujan","angin","badai","petir","pelangi","kabut","embun","salju","es",
+
+    # PERASAAN & SIFAT
+    "cinta","rindu","sedih","bahagia","marah","takut","bangga","malu","kaget",
+    "bosan","lelah","lapar","haus","sakit","sehat","kuat","lemah","cantik","jelek",
+
+    # KONSEP & ABSTRAK
+    "mimpi","waktu","uang","musik","seni","ilmu","budaya","agama","sejarah",
+    "perang","damai","merdeka","keadilan","kebenaran","kebohongan","harapan",
+    "kenangan","kehidupan","kematian","takdir","nasib","keberuntungan","rezeki",
+
+    # KERAJAAN & SEJARAH
+    "raja","ratu","pangeran","putri","sultan","kaisar","mahkota","tahta","kerajaan",
+    "prajurit","pedang","perisai","panah","tombak","benteng","istana","mahkamah",
+
+    # ALAM INDONESIA KHUSUS
+    "gamelan","wayang","batik","reog","kecak","angklung","rendang","tempe",
+    "sawah","desa","nelayan","hutan","orangutan","komodo","cendrawasih","bekantan",
+
+    # TAMBAHAN RANDOM
+    "api","gelap","terang","panas","dingin","basah","kering","besar","kecil",
+    "tinggi","rendah","cepat","lambat","keras","lembut","manis","pahit","asin",
+    "garam","gula","madu","racun","obat","luka","darah","tulang","jantung","otak",
+    "nafas","tidur","mimpi","bangun","jalan","lari","terbang","renang","menari",
+    "menyanyi","tertawa","menangis","berbicara","menulis","membaca","belajar",
+    "bermain","bekerja","istirahat","makan","minum","masak","bersih","kotor",
+    "cantik","indah","jelek","lama","baru","tua","muda","hidup","mati","lahir",
 ]
 
 used_words = set()
@@ -589,30 +649,38 @@ def generate_word():
         return jsonify({"error": "Model masih loading"}), 503
     
     import random
+    import time
+    
+    # Seed random dengan waktu agar benar-benar acak setiap request
+    random.seed(int(time.time() * 1000) % 2**32)
     
     # Filter dari KATA_LAYAK: harus ada di model dan belum dipakai
     available = [k for k in KATA_LAYAK 
                  if k in word_vectors and k not in used_words]
     
-    if not available:
-        # Reset dan coba lagi
+    # Jika sudah lebih dari 80% kata terpakai, reset agar tidak kehabisan
+    total_valid = len([k for k in KATA_LAYAK if k in word_vectors])
+    if len(available) < total_valid * 0.2:
+        print(f"[WORD] Reset used_words ({len(used_words)} kata sudah dipakai)")
         used_words.clear()
         available = [k for k in KATA_LAYAK if k in word_vectors]
     
     if available:
-        kata = random.choice(available)
+        # Shuffle dulu untuk extra random
+        random.shuffle(available)
+        kata = available[0]
     else:
-        # Fallback keras: ambil dari vocab model dengan filter ketat
+        # Fallback: ambil dari vocab model
         candidates = [w for w in vocab_list 
-                     if (4 <= len(w) <= 12 
+                     if (4 <= len(w) <= 10 
                          and w.isalpha() 
-                         and w[0] in 'abcdefghijklmnoprstuw'  # huruf awal umum Indonesia
-                         and not any(c in w for c in 'qvxyz')  # hindari huruf jarang
+                         and not any(c in w for c in 'xqz')
                          and w not in used_words)]
         kata = random.choice(candidates) if candidates else "laut"
     
     used_words.add(kata)
-    print(f"[WORD] Terpilih: '{kata}' (sisa: {len(available)-1} kata layak)")
+    sisa = len([k for k in KATA_LAYAK if k in word_vectors and k not in used_words])
+    print(f"[WORD] Terpilih: '{kata}' | sisa {sisa} kata belum dipakai")
     
     return jsonify({"success": True, "kata": kata.upper()})
 
