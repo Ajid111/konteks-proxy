@@ -59,20 +59,27 @@ def cosine_similarity(v1, v2):
     return dot / norm
 
 def load_model_from_text(filepath):
-    """Load model fastText format teks"""
+    """
+    Load model fastText - hanya 50K kata teratas.
+    50K kata x 300 dim x 4 bytes = ~60MB RAM (aman di Railway free tier 512MB).
+    Kata teratas di file = paling sering di Wikipedia = kata umum pasti ada.
+    """
     global word_vectors, vocab_list, model_ready, model_error
+    MAX_WORDS = 50000
     try:
-        print(f"Loading model dari {filepath}...")
+        print(f"Loading model (max {MAX_WORDS} kata)...")
         count = 0
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             header = f.readline()
-            dims = int(header.strip().split()[1]) if header.strip().split() else 300
+            parts_h = header.strip().split()
+            dims = int(parts_h[1]) if len(parts_h) >= 2 else 300
             for line in f:
+                if count >= MAX_WORDS:
+                    break
                 parts = line.rstrip().split(' ')
                 if len(parts) < 2:
                     continue
                 word = parts[0].lower()
-                # Hanya simpan kata Indonesia yang bersih
                 if not word.isalpha() or len(word) < 2 or len(word) > 20:
                     continue
                 try:
@@ -84,7 +91,18 @@ def load_model_from_text(filepath):
                 except:
                     continue
         print(f"Model loaded: {count} kata")
+        # Cek kata penting
+        test = ["hutan","pohon","laut","api","air","gunung","rumah","nasi"]
+        ada = [w for w in test if w in word_vectors]
+        tidak = [w for w in test if w not in word_vectors]
+        print(f"Kata kunci ada di model: {ada}")
+        if tidak:
+            print(f"TIDAK ADA di model: {tidak}")
         model_ready = True
+        # Filter KATA_LAYAK: hanya yang ada di model
+        global KATA_LAYAK
+        KATA_LAYAK = [k for k in KATA_LAYAK if k in word_vectors]
+        print(f"KATA_LAYAK valid: {len(KATA_LAYAK)} kata")
     except Exception as e:
         model_error = str(e)
         print(f"Error loading model: {e}")
@@ -94,6 +112,10 @@ def download_and_load_model():
     global model_ready, model_error
     
     model_path = "/tmp/id_model.txt"
+    
+    # Hapus model lama jika ada (agar pakai versi terbaru dengan limit 50K)
+    # Uncomment baris di bawah jika perlu force re-download:
+    # if os.path.exists(model_path): os.remove(model_path)
     
     # Cek apakah sudah ada
     if os.path.exists(model_path):
