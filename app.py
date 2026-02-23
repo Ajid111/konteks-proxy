@@ -56,24 +56,86 @@ used_words = set()
 # Format: { kata_pusat: [kata_sangat_dekat, ...] }
 # ============================================================
 SEMANTIC_CLUSTERS = {
-    "sekolah":  ["kelas","guru","murid","siswa","buku","pelajaran","tugas","ujian","nilai","rapor","les","belajar","perpustakaan","kantin","lapangan","seragam","tas","pensil","pulpen","bangku","kurikulum","ulangan","pr","wisuda","ijazah","sd","smp","sma","universitas","kampus","mahasiswa","dosen","kuliah"],
-    "hutan":    ["pohon","rimba","belantara","lebat","semak","belukar","daun","ranting","akar","batang","lumut","jamur","bambu","rotan","kayu","satwa","harimau","gajah","orangutan","monyet","rusa","burung","deforestasi","konservasi","tropis","lembab","hijau","teduh","rindang","cagar","taman nasional"],
-    "laut":     ["ikan","ombak","pantai","samudra","nelayan","kapal","perahu","jaring","terumbu","karang","lumba","paus","hiu","cumi","udang","kerang","garam","asin","pasir","pelabuhan","biru","gelombang","pesisir","teluk","selat","pulau","tsunami"],
-    "api":      ["nyala","bara","panas","membakar","asap","abu","arang","korek","lilin","obor","kompor","kayu","kebakaran","hangus","gosong","cahaya","terang","unggun","merah","oranye"],
-    "air":      ["minum","basah","cair","sungai","danau","hujan","kolam","sumur","embun","es","banjir","jernih","mengalir","sejuk","segar","mineral","pompa","pipa","waduk","bendungan","mata air"],
-    "rumah":    ["kamar","dapur","ruang tamu","kamar mandi","garasi","teras","halaman","pagar","pintu","jendela","atap","lantai","dinding","tangga","sofa","meja","kursi","lemari","kasur","bantal","lampu","listrik","kontrakan","kos","sewa","bangunan"],
-    "masak":    ["bumbu","rempah","dapur","kompor","wajan","panci","pisau","minyak","garam","gula","bawang","cabai","kunyit","jahe","santan","kecap","resep","goreng","rebus","kukus","bakar","tumis","tepung","adonan"],
-    "makanan":  ["nasi","lauk","sayur","kenyang","lapar","enak","lezat","pedas","manis","asin","gurih","warung","restoran","piring","sendok","garpu","jajanan","kue","roti","sate","bakso","mie","sup","camilan"],
-    "pakaian":  ["baju","celana","rok","kaos","kemeja","jaket","topi","sepatu","sandal","kaus kaki","cincin","gelang","kalung","anting","dompet","tas","kain","benang","merk","fashion","butik"],
-    "olahraga": ["sepak bola","basket","voli","badminton","renang","lari","gym","latihan","pertandingan","kompetisi","juara","medali","atlet","pemain","pelatih","stadion","lapangan","bola","raket","gol","skor","tim","klub"],
-    "kesehatan":["dokter","obat","sakit","rumah sakit","puskesmas","perawat","apotek","resep","vitamin","vaksin","imun","demam","batuk","flu","luka","operasi","rawat","sembuh","sehat","gizi","nutrisi","diet"],
-    "keluarga": ["ayah","ibu","anak","kakak","adik","kakek","nenek","paman","bibi","sepupu","saudara","suami","istri","orang tua","menikah","rumah tangga","keturunan","cucu","mertua","ipar"],
-    "kota":     ["jalan","gedung","mobil","motor","macet","ramai","penduduk","pasar","toko","mall","kantor","sekolah","rumah","jembatan","lampu","polisi","bus","angkot","taksi","ojek","trotoar","taman","plaza"],
-    "alam":     ["gunung","bukit","lembah","sungai","danau","hutan","pantai","sawah","ladang","kebun","desa","udara","hijau","sejuk","tenang","bersih","alam bebas","petualangan","camping","hiking","trekking"],
-    "musik":    ["lagu","nada","melodi","ritme","irama","suara","vokal","penyanyi","band","gitar","piano","drum","bass","biola","keyboard","studio","rekaman","konser","album","hits","genre","jazz","pop","rock"],
-    "teknologi":["komputer","laptop","hp","smartphone","internet","wifi","aplikasi","software","hardware","program","coding","data","server","cloud","ai","robot","digital","online","website","medsos","youtube","streaming"],
-    "pertanian":["sawah","ladang","kebun","petani","panen","tanam","bibit","pupuk","pestisida","traktor","cangkul","irigasi","gabah","beras","jagung","singkong","ubi","tomat","cabai","kangkung","bayam","wortel","kentang"],
-    "perikanan":["ikan","nelayan","jaring","perahu","kolam","budidaya","tambak","udang","lele","nila","bandeng","salmon","tuna","kerapu","cumi","kepiting","rajungan","asin","teri","asap"],
+    # ALAM & LINGKUNGAN
+    "hutan":    ["pohon","rimba","belantara","lebat","semak","belukar","daun","ranting","akar","batang","lumut","jamur","bambu","rotan","kayu","satwa","harimau","gajah","orangutan","monyet","rusa","burung","deforestasi","konservasi","tropis","lembab","hijau","teduh","rindang","cagar","margasatwa","ekosistem"],
+    "laut":     ["ikan","ombak","pantai","samudra","nelayan","kapal","perahu","jaring","terumbu","karang","lumba","paus","hiu","cumi","udang","kerang","garam","asin","pasir","pelabuhan","biru","gelombang","pesisir","teluk","selat","pulau","tsunami","lautnya","lautan","bahari","maritim"],
+    "gunung":   ["puncak","lereng","kawah","vulkanik","mendaki","pendaki","trekking","hutan","kabut","dingin","salju","lava","magma","meletus","erupsi","gunung berapi","tebing","jurang","batu","kerikil","savana","padang","edelweiss","jalur","camp","basecamp","summit","altitude"],
+    "sungai":   ["air","mengalir","arus","hulu","hilir","muara","jembatan","perahu","ikan","banjir","bendungan","irigasi","sawah","tepi","bantaran","keruh","jernih","deras","tenang","danau","rawa","delta","erosi","sedimen"],
+    "api":      ["nyala","bara","panas","membakar","asap","abu","arang","korek","lilin","obor","kompor","kayu","kebakaran","hangus","gosong","cahaya","terang","unggun","merah","oranye","lidah api","percikan","tungku","perapian","damkar","pemadam"],
+    "air":      ["minum","basah","cair","sungai","danau","hujan","kolam","sumur","embun","es","banjir","jernih","mengalir","sejuk","segar","mineral","pompa","pipa","waduk","bendungan","mata air","tetes","genangan","kelembaban","hidrogen","oksigen"],
+    "angin":    ["hembus","tiup","badai","topan","kencang","sepoi","sejuk","tornado","siklon","ribut","puting beliung","kecepatan","arah","barat","timur","utara","selatan","monsun","angin laut","angin darat","layar","layang","dingin","segar"],
+    "hujan":    ["tetes","lebat","gerimis","deras","banjir","petir","kilat","mendung","awan","basah","payung","jas hujan","musim hujan","cuaca","pelangi","segar","tanah","genangan","selokan","banjir","kabut"],
+
+    # KERAJAAN & SEJARAH
+    "raja":     ["ratu","mahkota","kerajaan","istana","pangeran","putri","tahta","singgasana","permaisuri","bangsawan","dinasti","sultan","kaisar","khalifah","pemimpin","penguasa","rakyat","kerajaan","perang","tentara","pahlawan","pedang","benteng","prajurit","bala","wilayah","kekuasaan","takhta","wangsa","adipati","adipati","bangsawan","ningrat","harem","keputren","penakluk","penjajah","menaklukkan","memerintah","bertahta","mahkamah","pengadilan","hukum","pajak","upeti","patih","mahapatih","senopati","panglima"],
+    "kerajaan": ["raja","ratu","istana","mahkota","tahta","bangsawan","pangeran","putri","dinasti","sultan","kaisar","rakyat","perang","tentara","pedang","prajurit","wilayah","kekuasaan","kejayaan","runtuh","takluk","jajah","koloni","imperium","monarki","kerajaan kuno","majapahit","sriwijaya","mataram","pajang","demak"],
+    "istana":   ["raja","ratu","kerajaan","mahkota","pangeran","putri","bangsawan","megah","mewah","bangunan","taman","penjaga","pengawal","singgasana","aula","balairung","dapur","kamar","menara","benteng","tembok","parit","gerbang","upacara","pesta","jamuan"],
+    "perang":   ["tentara","prajurit","senjata","pedang","panah","tombak","senapan","bom","peluru","musuh","pertempuran","medan","menyerang","bertahan","kalah","menang","korban","pahlawan","jenderal","komandan","strategi","taktik","benteng","pertahanan","serangan","invasi","penaklukan","gencatan senjata","perdamaian","perjanjian"],
+    "pahlawan": ["hero","pejuang","pemberani","berani","berjuang","berkorban","bangsa","negara","kemerdekaan","melawan","penjajah","tentara","perang","medal","penghargaan","legenda","sejarah","teladan","inspirasi","patriot","nasionalis"],
+
+    # PENDIDIKAN
+    "sekolah":  ["kelas","guru","murid","siswa","buku","pelajaran","tugas","ujian","nilai","rapor","les","belajar","perpustakaan","kantin","lapangan","seragam","tas","pensil","pulpen","bangku","kurikulum","ulangan","pr","wisuda","ijazah","sd","smp","sma","universitas","kampus","mahasiswa","dosen","kuliah","skripsi","semester"],
+    "buku":     ["baca","halaman","cerita","penulis","pengarang","penerbit","novel","kamus","ensiklopedia","komik","majalah","koran","perpustakaan","toko buku","sampul","judul","bab","paragraf","kalimat","kata","ilmu","pengetahuan","fiksi","nonfiksi","puisi","sastra"],
+    "guru":     ["murid","siswa","kelas","sekolah","mengajar","pelajaran","ilmu","papan tulis","nilai","ujian","rapor","pendidikan","profesional","honorer","sertifikasi","tunjangan","pengajar","mentor","pembimbing","wali kelas","kepala sekolah","dosen","lecturer"],
+
+    # MAKANAN & MINUMAN
+    "makanan":  ["nasi","lauk","sayur","kenyang","lapar","enak","lezat","pedas","manis","asin","gurih","warung","restoran","piring","sendok","garpu","jajanan","kue","roti","sate","bakso","mie","sup","camilan","gizi","nutrisi","kalori","menu","masak","resep"],
+    "nasi":     ["beras","piring","lauk","sayur","makan","kenyang","pulen","liwet","uduk","goreng","putih","kukus","lontong","ketupat","bubur","tim","gabah","sawah","petani","padi","penggilingan"],
+    "masak":    ["bumbu","rempah","dapur","kompor","wajan","panci","pisau","minyak","garam","gula","bawang","cabai","kunyit","jahe","santan","kecap","resep","goreng","rebus","kukus","bakar","tumis","tepung","adonan","matang","mentah","racik"],
+    "kopi":     ["minum","pahit","manis","susu","gula","cangkir","cafe","barista","espresso","cappuccino","latte","robusta","arabika","biji","panen","kebun","roasting","grinding","aroma","hangat","pagi","kafe","ngopi"],
+    "gula":     ["manis","tebu","kelapa","aren","pasir","halus","merah","putih","kue","minuman","diabetes","kalori","sirup","madu","pemanis","kristal","larut","karamel","coklat"],
+
+    # TRANSPORTASI
+    "kapal":    ["laut","berlayar","pelabuhan","nelayan","awak","kapten","penumpang","kargo","jangkar","layar","mesin","lambung","dek","kemudi","mercusuar","badai","ombak","samudra","ferry","kapal selam","kapal perang","ekspedisi"],
+    "pesawat":  ["terbang","pilot","bandara","penumpang","tiket","landasan","sayap","mesin","jet","ketinggian","awan","turbulens","pramugari","bagasi","kargo","penerbangan","rute","internasional","domestik","boarding","terminal"],
+    "mobil":    ["jalan","mengemudi","sopir","bensin","solar","mesin","roda","kemudi","rem","gas","klakson","spion","kaca","ban","garasi","parkir","kemacetan","lalu lintas","polisi","sim","stnk","dealer","merk"],
+
+    # PROFESI
+    "dokter":   ["pasien","sakit","obat","rumah sakit","klinik","periksa","diagnosa","resep","operasi","perawat","bidan","apoteker","spesialis","penyakit","sembuh","sehat","medis","kesehatan","stetoskop","jarum suntik","infus"],
+    "polisi":   ["hukum","kejahatan","pelaku","korban","laporan","penyelidikan","penyidikan","patroli","senjata","borgol","penjara","jaksa","hakim","pengadilan","tilang","lalu lintas","keamanan","ketertiban","masyarakat"],
+
+    # RUMAH & BANGUNAN
+    "rumah":    ["kamar","dapur","ruang tamu","kamar mandi","garasi","teras","halaman","pagar","pintu","jendela","atap","lantai","dinding","tangga","sofa","meja","kursi","lemari","kasur","bantal","lampu","listrik","kontrakan","kos","sewa","bangunan","tembok","pondasi"],
+    "dapur":    ["masak","kompor","panci","wajan","pisau","bumbu","bahan","minyak","kulkas","rak","piring","gelas","sendok","garpu","talenan","wastafel","air","sabun","cuci","bersih","asap","aroma","resep"],
+
+    # ALAM SEMESTA
+    "bulan":    ["malam","bintang","langit","sinar","gelap","terang","gerhana","purnama","sabit","gravitasi","pasang","surut","astronot","luar angkasa","orbit","bumi","matahari","bulan baru","romantis","puisi","laut"],
+    "matahari": ["sinar","panas","cahaya","terang","terbit","terbenam","fajar","senja","bumi","bulan","bintang","planet","tata surya","energi","surya","panel surya","ultraviolet","vitamin d","fotosintesis","hangat","musim"],
+    "bintang":  ["langit","malam","kelap kelip","sinar","jauh","galaksi","konstelasi","rasi","astronomi","teleskop","luar angkasa","planet","meteor","supernova","bima sakti","zodiak","ramalan","artis","terkenal","populer","idola"],
+
+    # HEWAN
+    "harimau":  ["singa","macan","tutul","belang","buas","liar","predator","hutan","berburu","mangsa","cakar","taring","mengaum","lari","kuat","ganas","terancam","punah","konservasi","kebun binatang","sumatera","kalimantan"],
+    "ikan":     ["laut","sungai","kolam","berenang","sirip","insang","sisik","nelayan","memancing","pancing","jaring","segar","asin","goreng","bakar","kuah","protein","terumbu karang","aquarium","budidaya","tambak"],
+    "burung":   ["terbang","sayap","bulu","paruh","sarang","telur","langit","pohon","berkicau","suara","camar","elang","merpati","nuri","beo","kakatua","merak","bangau","flamingo","migrasi","bebas"],
+
+    # OLAHRAGA & HIBURAN
+    "olahraga": ["sepak bola","basket","voli","badminton","renang","lari","gym","latihan","pertandingan","kompetisi","juara","medali","atlet","pemain","pelatih","stadion","lapangan","bola","raket","gol","skor","tim","klub","sehat","kebugaran"],
+    "musik":    ["lagu","nada","melodi","ritme","irama","suara","vokal","penyanyi","band","gitar","piano","drum","bass","biola","keyboard","studio","rekaman","konser","album","hits","genre","jazz","pop","rock","lirik","chord"],
+
+    # TEKNOLOGI
+    "teknologi":["komputer","laptop","hp","smartphone","internet","wifi","aplikasi","software","hardware","program","coding","data","server","cloud","ai","robot","digital","online","website","medsos","youtube","streaming","inovasi","canggih"],
+    "internet": ["online","website","browsing","wifi","data","email","media sosial","youtube","google","download","upload","streaming","jaringan","koneksi","server","bandwidth","viral","konten","kreator","influencer"],
+
+    # ALAM & CUACA
+    "hujan":    ["tetes","lebat","gerimis","deras","banjir","petir","kilat","mendung","awan","basah","payung","jas hujan","musim","cuaca","pelangi","segar","tanah","genangan","banjir","kabut","dingin","sejuk"],
+    "angin":    ["hembus","tiup","badai","topan","kencang","sepoi","sejuk","tornado","siklon","ribut","dingin","segar","layar","layang","kecepatan","arah","barat","timur","utara","selatan","monsun"],
+
+    # PERTANIAN
+    "sawah":    ["padi","beras","nasi","petani","tanam","panen","irigasi","air","lumpur","traktor","cangkul","bajak","gabah","jerami","ladang","kebun","desa","hijau","subur","pupuk","pestisida"],
+    "petani":   ["sawah","ladang","kebun","panen","tanam","bibit","pupuk","traktor","cangkul","beras","jagung","sayur","buah","sapi","kambing","desa","sederhana","kerja keras","hasil bumi","musim"],
+
+    # KELUARGA & SOSIAL
+    "keluarga": ["ayah","ibu","anak","kakak","adik","kakek","nenek","paman","bibi","sepupu","saudara","suami","istri","orang tua","menikah","rumah tangga","keturunan","cucu","mertua","ipar","harmonis","hangat"],
+    "cinta":    ["kasih","sayang","rindu","kangen","romansa","pasangan","kekasih","suami","istri","menikah","romantis","bunga","coklat","ciuman","pelukan","setia","patah hati","putus","jodoh","jatuh cinta","perasaan"],
+
+    # KESEHATAN
+    "kesehatan":["dokter","obat","sakit","rumah sakit","puskesmas","perawat","apotek","vaksin","imun","demam","batuk","flu","luka","operasi","rawat","sembuh","sehat","gizi","nutrisi","diet","olahraga","istirahat"],
+
+    # PENDIDIKAN LANJUT
+    "ilmu":     ["pengetahuan","belajar","sekolah","buku","guru","murid","sains","teknologi","riset","penelitian","percobaan","teori","fakta","data","analisis","kesimpulan","cerdas","pandai","pintar","akademik"],
+
+    # KOTA & INFRASTRUKTUR
+    "kota":     ["jalan","gedung","mobil","motor","macet","ramai","penduduk","pasar","toko","mall","kantor","sekolah","jembatan","lampu","polisi","bus","angkot","taksi","trotoar","taman","plaza","metropolitan","urban"],
 }
 
 def get_semantic_boost(kata_rahasia, kata_tebak):
