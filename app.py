@@ -138,6 +138,68 @@ SEMANTIC_CLUSTERS = {
     "kota":     ["jalan","gedung","mobil","motor","macet","ramai","penduduk","pasar","toko","mall","kantor","sekolah","jembatan","lampu","polisi","bus","angkot","taksi","trotoar","taman","plaza","metropolitan","urban"],
 }
 
+# ============================================================
+# CATEGORY MAP - Reverse lookup
+# Jika kata rahasia ADALAH anggota kategori ini,
+# maka kata kategori otomatis dekat dengan kata rahasia
+# Contoh: harimau → hewan, binatang, satwa semua harus dekat
+# ============================================================
+CATEGORY_MAP = {
+    # Kategori hewan
+    "hewan":    ["harimau","singa","gajah","monyet","rusa","kuda","sapi","kambing","domba","babi","ayam","bebek","angsa","burung","ikan","udang","cumi","kepiting","ular","buaya","kura","penyu","katak","kodok","tikus","kelinci","kucing","anjing","rubah","serigala","beruang","panda","zebra","jerapah","badak","kuda nil","kanguru","koala","lumba","paus","hiu","cumi","sotong","gurita","lele","nila","bandeng","salmon","tuna","kerapu","arwana","koi","mujair","gabus"],
+    "binatang": ["harimau","singa","gajah","monyet","rusa","kuda","sapi","kambing","domba","babi","ayam","bebek","burung","ikan","ular","buaya","tikus","kelinci","kucing","anjing","beruang","panda","zebra","jerapah","badak","lumba","paus","hiu","katak","kodok"],
+    "satwa":    ["harimau","singa","gajah","orangutan","monyet","rusa","tapir","badak","bekantan","anoa","komodo","cendrawasih","maleo","jalak","elang","rangkong","pesut"],
+    "predator": ["harimau","singa","macan","serigala","hiu","buaya","elang","ular","cheetah","jaguar","leopard","puma","beruang","srigala"],
+    "mamalia":  ["harimau","singa","gajah","monyet","kuda","sapi","kambing","domba","babi","tikus","kelinci","kucing","anjing","beruang","panda","lumba","paus","kelelawar","landak","musang"],
+    "reptil":   ["ular","buaya","kadal","cicak","tokek","biawak","komodo","kura","bunglon","iguana","gecko"],
+    "serangga": ["lebah","kupu","semut","nyamuk","lalat","capung","jangkrik","belalang","kecoak","ulat","cacing","laba","kalajengking"],
+    
+    # Kategori tumbuhan
+    "tumbuhan": ["pohon","bunga","rumput","pakis","lumut","jamur","bambu","rotan","padi","jagung","singkong","ubi","kentang","wortel","bayam","kangkung","cabai","tomat","bawang","jahe","kunyit","lengkuas","serai"],
+    "pohon":    ["jati","mahoni","pinus","cemara","akasia","beringin","mangga","rambutan","durian","nangka","jambu","pisang","pepaya","kelapa","sawit","karet","bambu","rotan","meranti","ulin","eboni"],
+    "bunga":    ["mawar","melati","anggrek","dahlia","tulip","matahari","kenanga","kamboja","flamboyan","bugenvil","lotus","teratai","lavender","lily","aster","krisan"],
+    "buah":     ["mangga","apel","jeruk","pisang","anggur","rambutan","durian","manggis","salak","pepaya","melon","semangka","strawberry","nanas","jambu","belimbing","sirsak","alpukat","kiwi","lemon"],
+    "sayuran":  ["bayam","kangkung","wortel","kentang","buncis","kacang","tomat","cabai","terong","labu","kubis","sawi","selada","brokoli","kol","seledri","daun bawang","paprika"],
+    
+    # Kategori makanan
+    "masakan":  ["nasi","mie","sate","bakso","soto","rendang","gado","ketoprak","siomay","batagor","pempek","gudeg","rawon","opor","semur","gulai","kare","sup","sop","tumis","goreng"],
+    "minuman":  ["air","kopi","teh","susu","jus","sirup","soda","es","wedang","bajigur","bandrek","cendol","dawet","boba","smoothie"],
+    
+    # Kategori profesi
+    "profesi":  ["dokter","guru","polisi","tentara","petani","nelayan","pedagang","pengacara","hakim","jaksa","arsitek","insinyur","pilot","sopir","koki","penulis","seniman","musisi","aktor","atlet"],
+    "pejuang":  ["pahlawan","tentara","prajurit","ksatria","samurai","ninja","gladiator","viking","pendekar","pemberani"],
+    
+    # Kategori tempat
+    "bangunan": ["rumah","gedung","sekolah","kantor","masjid","gereja","pura","vihara","istana","benteng","penjara","rumah sakit","hotel","pasar","mall","stadion","bandara","pelabuhan","terminal"],
+    "tempat ibadah": ["masjid","gereja","pura","vihara","klenteng","sinagog","kapel","mushola","langgar"],
+    
+    # Kategori alam
+    "cuaca":    ["hujan","angin","badai","petir","kilat","mendung","cerah","berawan","kabut","embun","salju","topan","tornado","siklon","kemarau"],
+    "bencana":  ["banjir","gempa","tsunami","longsor","gunung meletus","kebakaran","kekeringan","badai","topan","angin ribut"],
+    
+    # Kategori sifat/perasaan
+    "perasaan": ["senang","sedih","marah","takut","cinta","benci","kecewa","bahagia","rindu","khawatir","bangga","malu","iri","cemburu","terharu","kaget","bingung","lelah","bosan"],
+    "sifat":    ["baik","jahat","jujur","bohong","rajin","malas","pemberani","pengecut","dermawan","pelit","sabar","pemarah","cerdas","bodoh","cantik","tampan","kuat","lemah","cepat","lambat"],
+    
+    # Kategori waktu
+    "waktu":    ["detik","menit","jam","hari","minggu","bulan","tahun","abad","milenium","pagi","siang","sore","malam","dini hari","subuh","fajar","senja","tengah malam"],
+    "musim":    ["hujan","kemarau","semi","panas","gugur","dingin","pancaroba"],
+    
+    # Kategori warna
+    "warna":    ["merah","biru","kuning","hijau","putih","hitam","abu","oranye","ungu","pink","coklat","emas","perak","tosca","magenta","maroon","navy","krem","beige"],
+    
+    # Kategori ukuran/bentuk
+    "ukuran":   ["besar","kecil","panjang","pendek","tinggi","rendah","lebar","sempit","tebal","tipis","berat","ringan","luas","sempit"],
+    
+    # Kategori kerajaan/sejarah
+    "pemimpin": ["raja","ratu","presiden","gubernur","walikota","bupati","camat","lurah","sultan","kaisar","khalifah","perdana menteri","menteri","jenderal","laksamana","panglima"],
+    "kerajaan kuno": ["majapahit","sriwijaya","mataram","pajang","demak","banten","aceh","ternate","tidore","gowa","bone","kutai","tarumanegara","kalingga","kediri","singasari"],
+    
+    # Kategori seni & budaya
+    "seni":     ["lukis","pahat","tari","musik","teater","film","fotografi","sastra","puisi","pantun","batik","wayang","gamelan","angklung","kecak","reog","barong"],
+    "alat musik":["gitar","piano","biola","drum","bass","keyboard","suling","seruling","gendang","kendang","angklung","gamelan","sasando","kecapi","sitar","harmonika","terompet","saksofon"],
+}
+
 def get_semantic_boost(kata_rahasia, kata_tebak):
     """
     Kembalikan boost ranking berdasarkan semantic cluster.
@@ -401,55 +463,77 @@ def generate_ranking():
     ranking = {}
     kata_l = kata_rahasia.lower()
     
-    # Kelompok kata yang mendapat boost berdasarkan cluster
+    # ── STEP 1: Boost dari SEMANTIC_CLUSTERS (kata rahasia sebagai pusat) ──
     boosted = {}
+    
+    # Cek SEMANTIC_CLUSTERS: harimau → [singa, buas, macan, ...]
     if kata_l in SEMANTIC_CLUSTERS:
-        related = SEMANTIC_CLUSTERS[kata_l]
-        for i, r in enumerate(related):
-            if r in wv_ranking:
-                if i < 6:
-                    boosted[r] = i + 2       # ranking 2-7 (sangat dekat)
-                elif i < 16:
-                    boosted[r] = i + 8       # ranking ~10-24 (dekat)
-                else:
-                    boosted[r] = i + 20      # ranking ~36-70 (cukup dekat)
+        for i, r in enumerate(SEMANTIC_CLUSTERS[kata_l]):
+            if i < 6:
+                boosted[r] = i + 2        # #2-7: sangat dekat
+            elif i < 16:
+                boosted[r] = i + 8        # #10-24: dekat
+            else:
+                boosted[r] = i + 20       # #36-80: cukup dekat
     
-    # Susun ranking final:
-    # 1. Kata rahasia sendiri selalu #1
-    # 2. Kata yang di-boost masuk ke posisi awal
-    # 3. Sisanya dari Word2Vec, digeser setelah yang di-boost
+    # ── STEP 2: Boost dari CATEGORY_MAP (reverse lookup) ──
+    # harimau ada di CATEGORY_MAP["hewan"] → maka "hewan" dapat ranking bagus
+    # harimau ada di CATEGORY_MAP["predator"] → maka "predator" dapat ranking bagus
+    category_boost_rank = len(boosted) + 2  # mulai setelah SEMANTIC boost
+    for category_word, members in CATEGORY_MAP.items():
+        if kata_l in members:
+            # Kata kategori ini SANGAT relevan dengan kata rahasia
+            idx = members.index(kata_l)
+            # Makin awal kata rahasia muncul di list = kategori makin relevan
+            if idx < 5:
+                cat_rank = category_boost_rank      # sangat relevan
+                category_boost_rank += 1
+            elif idx < 15:
+                cat_rank = category_boost_rank + 10  # relevan
+            else:
+                cat_rank = category_boost_rank + 30  # cukup relevan
+            
+            if category_word not in boosted:
+                boosted[category_word] = cat_rank
+            
+            # Juga boost beberapa anggota lain dari kategori yang sama
+            # (sesama hewan = relevan satu sama lain)
+            sibling_rank = cat_rank + len(boosted) + 2
+            for j, sibling in enumerate(members):
+                if sibling != kata_l and sibling not in boosted:
+                    if j < 8:
+                        boosted[sibling] = sibling_rank + j
     
+    # ── STEP 3: Susun ranking final ──
     boosted_set = set(boosted.keys())
-    
-    # Hitung berapa slot yang "dipakai" oleh boosted words
-    # Word2Vec words lain digeser ke bawah
-    boost_count = len(boosted)
     
     ranking[kata_rahasia] = 1
     for word, brank in boosted.items():
         ranking[word] = brank
     
-    # Sisanya dari Word2Vec similarity (skip yang sudah di-boost)
-    current_rank = boost_count + 2  # mulai setelah boosted words
+    # Sisanya dari Word2Vec (digeser setelah boosted)
+    max_boosted = max(boosted.values()) if boosted else 1
+    current_rank = max_boosted + 1
     for word, sim in similarities:
         if word == kata_rahasia or word in boosted_set:
             continue
         ranking[word] = current_rank
         current_rank += 1
     
-    # Tambah kata-kata cluster yang tidak ada di Word2Vec (dengan ranking tinggi)
+    # Tambah kata cluster yang tidak ada di Word2Vec
     for i, r in enumerate(SEMANTIC_CLUSTERS.get(kata_l, [])):
         if r not in ranking:
-            if i < 6:
-                ranking[r] = i + 2
-            elif i < 16:
-                ranking[r] = i + 8
-            else:
-                ranking[r] = i + 20
+            ranking[r] = i + 2 if i < 6 else (i + 8 if i < 16 else i + 20)
+    
+    # Tambah kata kategori yang tidak ada di Word2Vec
+    for category_word, members in CATEGORY_MAP.items():
+        if kata_l in members and category_word not in ranking:
+            ranking[category_word] = len(boosted) + 5
     
     total = len(ranking)
-    boosted_info = list(boosted.items())[:5] if boosted else []
-    print(f"[RANKING] '{kata_rahasia}' -> {total} kata | boost: {len(boosted)} kata | contoh: {boosted_info}")
+    # Log contoh hasil boost untuk debugging
+    sample = sorted([(v,k) for k,v in boosted.items()])[:8]
+    print(f"[RANKING] '{kata_rahasia}' -> {total} kata | boost: {len(boosted)} | top boost: {sample}")
     
     # Simpan ke proxy cache (max 50 kata untuk hemat memory)
     with cache_lock:
