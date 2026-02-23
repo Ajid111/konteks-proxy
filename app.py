@@ -192,17 +192,37 @@ def generate_ranking():
     
     target_vec = word_vectors[kata_rahasia]
     
-    target_vec = word_vectors[kata_rahasia]
+    # Hitung similarity ke semua kata
+    # Filter hanya kata Indonesia: ada vokal, panjang wajar, semua huruf
+    def is_valid_indonesian(w):
+        if len(w) < 2 or len(w) > 18:
+            return False
+        if not w.isalpha():
+            return False
+        # Harus ada minimal 1 vokal
+        if not any(c in 'aiueo' for c in w):
+            return False
+        # Tidak boleh ada 4+ konsonan berurutan (bukan kata Indonesia)
+        consonants = set('bcdfghjklmnpqrstvwxyz')
+        streak = 0
+        for c in w:
+            if c in consonants:
+                streak += 1
+                if streak >= 4:
+                    return False
+            else:
+                streak = 0
+        # Hindari kata yang terlalu banyak huruf langka (x, q, z berlebihan)
+        rare = sum(1 for c in w if c in 'xqz')
+        if rare > 1:
+            return False
+        return True
     
-    # Hitung similarity ke semua kata, filter hanya kata Indonesia valid
     similarities = []
     for word, vec in word_vectors.items():
         if word == kata_rahasia:
             continue
-        # Filter: hanya kata yang benar-benar kata (bukan kode/singkatan)
-        if len(word) < 2 or len(word) > 20:
-            continue
-        if not word.isalpha():
+        if not is_valid_indonesian(word):
             continue
         sim = float(cosine_similarity(target_vec, vec))
         similarities.append((word, sim))
@@ -210,19 +230,18 @@ def generate_ranking():
     # Sort dari paling mirip ke paling jauh
     similarities.sort(key=lambda x: x[1], reverse=True)
     
-    # Ambil top 12000 saja agar tidak timeout (masih mencakup ranking luas)
-    TOP_N = 12000
+    # Ambil top 15000 untuk jangkauan luas tapi tidak timeout
+    TOP_N = 15000
     similarities = similarities[:TOP_N]
     
     # Convert ke ranking
     ranking = {}
     ranking[kata_rahasia] = 1
-    
     for i, (word, sim) in enumerate(similarities):
         ranking[word] = i + 2
     
     total = len(ranking)
-    print(f"[RANKING] '{kata_rahasia}' -> {total} kata (word2vec cosine)")
+    print(f"[RANKING] '{kata_rahasia}' -> {total} kata valid Indonesia (word2vec)")
     
     return jsonify({
         "success": True,
@@ -230,6 +249,32 @@ def generate_ranking():
         "ranking": ranking,
         "jumlah": total,
         "method": "word2vec"
+    })
+
+
+# ============================================================
+# ENDPOINT: Cek apakah kata ada di model (filter bahasa Indonesia)
+# ============================================================
+@app.route("/check-word", methods=["POST"])
+def check_word():
+    if request.headers.get("x-roblox-secret") != ROBLOX_SECRET:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    if not model_ready:
+        return jsonify({"valid": True})  # kalau model belum siap, loloskan saja
+    
+    data = request.get_json()
+    kata = (data.get("kata") or "").lower().strip()
+    
+    if not kata:
+        return jsonify({"valid": False, "alasan": "Kata kosong"})
+    
+    ada_di_model = kata in word_vectors
+    
+    return jsonify({
+        "valid": ada_di_model,
+        "kata": kata,
+        "alasan": None if ada_di_model else "Bukan kata bahasa Indonesia yang dikenal"
     })
 
 # ============================================================
